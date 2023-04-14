@@ -1,5 +1,7 @@
 # simulation program
 
+simul.ui파일 업데이트 하고 사용하시면다됩니다
+
 </br>
 
 > Run simulation using map files created by previous map design program
