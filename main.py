@@ -17,6 +17,8 @@
 import os
 import sys
 import random
+
+import pyqtgraph
 from PySide6 import *
 from PySide6.QtCore import QFileInfo
 from PySide6.QtGui import Qt
@@ -71,6 +73,8 @@ form_secondwindow = loadUiType(form_second)[0]
 # 1.homePage.ui
 class WindowClass(QMainWindow, form_class):
     def __init__(self):
+        global projectid
+        projectid='tmp'
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("시뮬레이터")
@@ -79,6 +83,8 @@ class WindowClass(QMainWindow, form_class):
 
     # -loadMap button 함수: simul.ui로 창전환
     def btn_loadMap(self):
+        global projectid
+        cur.execute("CALL deleteProject(%s)",[projectid])
         self.hide()
         self.second = secondwindow()
         self.second.exec()
@@ -291,10 +297,25 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         ### result ###
         # 기능-3) 마침 버튼 추가
         #결과-1) 결과표 tab_4: btn_ok_run
-
-
         #시간당 작업량 그래프 tab_5
         #로봇타입당 작업량 그래프 tab_6
+        """#self.graph=pyqtgraph.PlotWidget()
+        #self.tab_6.setCentralWidget(self.graph)
+
+        name=[]
+        workbelt = []
+        workdump = []
+        for i in range(count):
+            name.append("시뮬레이션 " + str(i + 1))
+            workbelt.append(10*(i+1)) #임의, 값받아오기
+            workdump.append(15 * (i + 1))#임의, 값받아오기
+        #self.graph1.setBackground('w')
+        #self.graph1.setLabel("left","로봇 타입당 작업량")
+        #self.graph1.showGrid(workbelt,workdump)
+        #self.graph.setYRange(0, 1000, padding=0)
+        self.graph1.plot(name,workbelt,"벨트타입 로봇","r")
+        self.graph1.plot(name, workdump, "덤프타입 로봇", "b")
+        #self.graph.plot(workbelt,workdump)"""
         ### result end ###
 
     # overview-3.확인 버튼 클릭시, 프로젝트정보 db입력 & run탭으로 이동
@@ -503,17 +524,18 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
     def btn_ok_run(self):
         print(count)
         #결과표 만들기
-        table = QTableWidget()
-        table.setRowCount(7)
-        table.setColumnCount(count)
+        self.table = QTableWidget()
+        self.table.setRowCount(7)
+        self.table.setColumnCount(count)
         headers = []
         for i in range(count):
             headers.append("시뮬레이션 " + str(i + 1))
         print(headers)
-        table.setHorizontalHeaderLabels(headers)
+        self.table.setHorizontalHeaderLabels(headers)
         # table.setHorizontalHeaderLabels(["simulation"])
-        table.setVerticalHeaderLabels(
+        self.table.setVerticalHeaderLabels(
             ["총 소요시간(s)", "시간당 작업량", "벨트로봇당 평균 작업량", "덤프로봇당 평균 작업량", "벨트로봇 개수", "덤프로봇 개수", "물류량"])
+        self.table.setItem(0, 0, QTableWidgetItem(str(int(int(self.work1.text()) / 60))))
         """for i in range(count):
             w="work"+str(i+1)
             b="belt"+str(i+1)
@@ -525,56 +547,76 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
             table.setItem(4, i, QTableWidgetItem(self.b))  # 벨트로봇 개수
             table.setItem(5, i, QTableWidgetItem(self.d))  # 덤프로봇 개수
             table.setItem(6, i, QTableWidgetItem(self.w))  # 물류량"""
-        """for i in range(count):
+        for i in range(count):
             if i==0:
-                table.setItem(0, i, QTableWidgetItem(60))  # 총소요시간:임의로 60초, 나중에 가져오기
-                table.setItem(1, i, QTableWidgetItem(10))  # 시간당 작업량=물류량/작업시간int((self.work1) / 60)
-                table.setItem(2, i, QTableWidgetItem(10))  # 벨트로봇 당 작업량=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))
-                table.setItem(3, i, QTableWidgetItem(60))  # 덤프로봇 당 작업량
-                table.setItem(4, i, QTableWidgetItem(self.belt1))  # 벨트로봇 개수
-                table.setItem(5, i, QTableWidgetItem(self.dump1))  # 덤프로봇 개수
-                table.setItem(6, i, QTableWidgetItem(self.work1))  # 물류량
+                self.table.setItem(0, i, QTableWidgetItem('60'))  # 총소요시간:임의로 60초, 나중에 값받기
+                self.table.setItem(1, i, QTableWidgetItem(str((int(int(self.work1.text()) / 60)))))  # 시간당 작업량=물류량/작업시간, 시간 값받기
+                self.table.setItem(2, i, QTableWidgetItem('10'))  # 벨트로봇 당 작업량 값받기[=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))]
+                self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량 값받기
+                self.table.setItem(4, i, QTableWidgetItem(self.belt1.text()))  # 벨트로봇 개수
+                self.table.setItem(5, i, QTableWidgetItem(self.dump1.text()))  # 덤프로봇 개수
+                self.table.setItem(6, i, QTableWidgetItem(self.work1.text()))  # 물류량
             elif i==1:
-                table.setItem(0, i, QTableWidgetItem(60))  # 총소요시간:임의로 60초, 나중에 가져오기
-                table.setItem(1, i, QTableWidgetItem(10))  # 시간당 작업량=물류량/작업시간int((self.work2) / 60)
-                table.setItem(2, i,QTableWidgetItem(10))  # 벨트로봇 당 작업량=총작업량*로봇타입비율 ?int((self.work2) * (self.belt2) / (self.dump2))
-                table.setItem(3, i, QTableWidgetItem(60))  # 덤프로봇 당 작업량
-                table.setItem(4, i, QTableWidgetItem(self.belt2))# 벨트로봇 개수
-                table.setItem(5, i, QTableWidgetItem(self.dump2))  # 덤프로봇 개수
-                table.setItem(6, i, QTableWidgetItem(self.work2))  # 물류량
+                self.table.setItem(0, i, QTableWidgetItem('60'))  # 총소요시간:임의로 60초, 나중에 값받기
+                self.table.setItem(1, i, QTableWidgetItem(
+                    str((int(int(self.work2.text()) / 60)))))  # 시간당 작업량=물류량/작업시간, 시간 값받기
+                self.table.setItem(2, i, QTableWidgetItem(
+                    '10'))  # 벨트로봇 당 작업량 값받기[=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))]
+                self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량 값받기
+                self.table.setItem(4, i, QTableWidgetItem(self.belt2.text()))  # 벨트로봇 개수
+                self.table.setItem(5, i, QTableWidgetItem(self.dump2.text()))  # 덤프로봇 개수
+                self.table.setItem(6, i, QTableWidgetItem(self.work2.text()))  # 물류량
             elif i==2:
-                table.setItem(0, i, QTableWidgetItem(60))  # 총소요시간:임의로 60초, 나중에 가져오기
-                table.setItem(1, i, QTableWidgetItem(10))  # 시간당 작업량=물류량/작업시간int((self.work3) / 60)
-                table.setItem(2, i,
-                              QTableWidgetItem(10))  # 벨트로봇 당 작업량=총작업량*로봇타입비율 ?int((self.work3) * (self.belt3) / (self.dump3))
-                table.setItem(3, i, QTableWidgetItem(60))  # 덤프로봇 당 작업량
-                table.setItem(4, i, QTableWidgetItem(self.belt3))  # 벨트로봇 개수
-                table.setItem(5, i, QTableWidgetItem(self.dump3))  # 덤프로봇 개수
-                table.setItem(6, i, QTableWidgetItem(self.work3))  # 물류량
+                self.table.setItem(0, i, QTableWidgetItem('60'))  # 총소요시간:임의로 60초, 나중에 값받기
+                self.table.setItem(1, i, QTableWidgetItem(
+                    str((int(int(self.work3.text()) / 60)))))  # 시간당 작업량=물류량/작업시간, 시간 값받기
+                self.table.setItem(2, i, QTableWidgetItem(
+                    '10'))  # 벨트로봇 당 작업량 값받기[=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))]
+                self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량 값받기
+                self.table.setItem(4, i, QTableWidgetItem(self.belt3.text()))  # 벨트로봇 개수
+                self.table.setItem(5, i, QTableWidgetItem(self.dump3.text()))  # 덤프로봇 개수
+                self.table.setItem(6, i, QTableWidgetItem(self.work3.text()))  # 물류량
             elif i==3:
-                table.setItem(0, i, QTableWidgetItem(60))  # 총소요시간:임의로 60초, 나중에 가져오기
-                table.setItem(1, i, QTableWidgetItem(10))  # 시간당 작업량=물류량/작업시간int((self.work4) / 60)
-                table.setItem(2, i,
-                              QTableWidgetItem(10))  # 벨트로봇 당 작업량=총작업량*로봇타입비율 ?int((self.work4) * (self.belt4) / (self.dump4))
-                table.setItem(3, i, QTableWidgetItem(60))  # 덤프로봇 당 작업량
-                table.setItem(4, i, QTableWidgetItem(self.belt4))  # 벨트로봇 개수
-                table.setItem(5, i, QTableWidgetItem(self.dump4))  # 덤프로봇 개수
-                table.setItem(6, i, QTableWidgetItem(self.work4))  # 물류량
+                self.table.setItem(0, i, QTableWidgetItem('60'))  # 총소요시간:임의로 60초, 나중에 값받기
+                self.table.setItem(1, i, QTableWidgetItem(
+                    str((int(int(self.work4.text()) / 60)))))  # 시간당 작업량=물류량/작업시간, 시간 값받기
+                self.table.setItem(2, i, QTableWidgetItem(
+                    '10'))  # 벨트로봇 당 작업량 값받기[=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))]
+                self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량 값받기
+                self.table.setItem(4, i, QTableWidgetItem(self.belt4.text()))  # 벨트로봇 개수
+                self.table.setItem(5, i, QTableWidgetItem(self.dump4.text()))  # 덤프로봇 개수
+                self.table.setItem(6, i, QTableWidgetItem(self.work4.text()))  # 물류량
             elif i==4: #현재 시뮬 5개 까지, 늘릴때 여기도 늘리기
-                table.setItem(0, i, QTableWidgetItem(60))  # 총소요시간:임의로 60초, 나중에 가져오기
-                table.setItem(1, i, QTableWidgetItem(10))  # 시간당 작업량=물류량/int((self.work5) / 60)
-                table.setItem(2, i,
-                              QTableWidgetItem(10))  # 벨트로봇 당 작업량=총작업량*로봇타입비율 ?int((self.work5) * (self.belt5) / (self.dump5))
-                table.setItem(3, i, QTableWidgetItem(60))  # 덤프로봇 당 작업량
-                table.setItem(4, i, QTableWidgetItem(self.belt5))  # 벨트로봇 개수
-                table.setItem(5, i, QTableWidgetItem(self.dump5))  # 덤프로봇 개수
-                table.setItem(6, i, QTableWidgetItem(self.work5))  # 물류량"""
+                self.table.setItem(0, i, QTableWidgetItem('60'))  # 총소요시간:임의로 60초, 나중에 값받기
+                self.table.setItem(1, i, QTableWidgetItem(
+                    str((int(int(self.work5.text()) / 60)))))  # 시간당 작업량=물류량/작업시간, 시간 값받기
+                self.table.setItem(2, i, QTableWidgetItem(
+                    '10'))  # 벨트로봇 당 작업량 값받기[=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))]
+                self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량 값받기
+                self.table.setItem(4, i, QTableWidgetItem(self.belt5.text()))  # 벨트로봇 개수
+                self.table.setItem(5, i, QTableWidgetItem(self.dump5.text()))  # 덤프로봇 개수
+                self.table.setItem(6, i, QTableWidgetItem(self.work5.text()))  # 물류량
 
 
-        table.setGeometry(300, 300, 600, 600)
+        self.table.setGeometry(300, 300, 600, 600)
         layout = QVBoxLayout()
-        layout.addWidget(table)
+        layout.addWidget(self.table)
         self.tab_4.setLayout(layout)
+        #로봇타입별 그래프
+        name = []
+        workbelt = []
+        workdump = []
+        for i in range(count):
+            name.append("시뮬레이션 " + str(i + 1))
+            workbelt.append(10 * (i + 1))  # 임의, 값받아오기
+            workdump.append(15 * (i + 1))  # 임의, 값받아오기
+        # self.graph1.setBackground('w')
+        # self.graph1.setLabel("left","로봇 타입당 작업량")
+        # self.graph1.showGrid(workbelt,workdump)
+        # self.graph.setYRange(0, 1000, padding=0)
+        self.graph1.plot(name, workbelt, "벨트타입 로봇", "r")
+        self.graph1.plot(name, workdump, "덤프타입 로봇", "b")
+        # self.graph.plot(workbelt,workdump)
         # 탭 이동
         cur_index = self.tabWidget.currentIndex()
         self.tabWidget.setCurrentIndex(cur_index + 1)
@@ -717,6 +759,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     myWindow = WindowClass()
     myWindow.show()
-    app.exec_()
-
+    app.exec()
+cur.execute("CALL deleteProject(%s)", [projectid])
 conn.close()
