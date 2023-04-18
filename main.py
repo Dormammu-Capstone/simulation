@@ -25,22 +25,8 @@ from PySide6.QtGui import Qt
 from PySide6.QtUiTools import loadUiType
 from PySide6.QtWidgets import QMainWindow, QDialog, QWidget, QFileDialog, QTableWidget, QVBoxLayout, QGridLayout, \
     QPushButton, QTableWidgetItem, QApplication, QLabel, QLineEdit, QTabWidget
-
-#from PyQt5.QtWidgets import *
-#from PyQt5 import uic
-#from PyQt5.QtCore import pyqtSlot, Qt
-#from PyQt5.QtGui import *
-#from PyQt5.QtCore import pyqtSlot, Qt
-#from PyQt5.QtWidgets import *
-#from PyQt5.QtGui import *
-#from PyQt5.QtCore import QFileInfo
 import random
-
-# import xlsxwriter
-
 import openpyxl
-#from PyQt5.uic.properties import QtGui
-
 import pymysql
 from pymysql.constants import CLIENT
 
@@ -50,7 +36,6 @@ cur = None
 conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='1290', db='lghpdb', charset='utf8',
                        client_flag=CLIENT.MULTI_STATEMENTS, autocommit=True)
 cur = conn.cursor()
-
 
 def resource_path(relative_path):
     base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
@@ -68,7 +53,6 @@ form_secondwindow = loadUiType(form_second)[0]
 #form_third = resource_path('view.ui')
 #form_thirdwindow = uic.loadUiType(form_third)[0]
 '''
-
 
 # 1.homePage.ui
 class WindowClass(QMainWindow, form_class):
@@ -109,7 +93,6 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         filename = file[0]
         load_xlsx = openpyxl.load_workbook(file[0], data_only=True)
         load_sheet = load_xlsx['NewSheet1']
-        # DB-1) self.map에 db에서 맵파일 불러오기 (지금은 엑셀로 가져옴. db에서 가져오는 걸로 변경하기)
 
         # 파일 이름으로 db에서 해당 정보 연결
         global file_name, simul_name, s_count
@@ -161,10 +144,9 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
                     self.map.item(i - 1, j - 1).setForeground(Qt.darkGray)
 
         self.ok.clicked.connect(self.btn_ok_overview)  # overview-3.확인 버튼 클릭시, 프로젝트 정보 db저장
-        self.ok_run.clicked.connect(self.btn_ok_run)  # run. 확인 버튼클릭시, result탭 이동, 해당 버튼 지금은 없음
+        self.ok_run.clicked.connect(self.btn_ok_run)  # run. 확인 버튼클릭시, result탭 이동
 
         # overview-2.속성별 색상 정보 보여주기
-        # DB-2)속성별 색상 정보 db에서 가져와서 보여주기
         sql = "SELECT * FROM grid " + "WHERE Grid_ID = %s;"
         cur.execute(sql, [str(file_name)])
         file_grid = cur.fetchone()
@@ -296,31 +278,11 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
 
         ### result ###
         # 기능-3) 마침 버튼 추가
-        #결과-1) 결과표 tab_4: btn_ok_run
-        #시간당 작업량 그래프 tab_5
-        #로봇타입당 작업량 그래프 tab_6
-        """#self.graph=pyqtgraph.PlotWidget()
-        #self.tab_6.setCentralWidget(self.graph)
-
-        name=[]
-        workbelt = []
-        workdump = []
-        for i in range(count):
-            name.append("시뮬레이션 " + str(i + 1))
-            workbelt.append(10*(i+1)) #임의, 값받아오기
-            workdump.append(15 * (i + 1))#임의, 값받아오기
-        #self.graph1.setBackground('w')
-        #self.graph1.setLabel("left","로봇 타입당 작업량")
-        #self.graph1.showGrid(workbelt,workdump)
-        #self.graph.setYRange(0, 1000, padding=0)
-        self.graph1.plot(name,workbelt,"벨트타입 로봇","r")
-        self.graph1.plot(name, workdump, "덤프타입 로봇", "b")
-        #self.graph.plot(workbelt,workdump)"""
+        #결과-1) 결과표(tab_4), 시간당 작업량 그래프(tab_5), 로봇타입당 작업량 그래프(tab_6): btn_ok_run 함수
         ### result end ###
 
     # overview-3.확인 버튼 클릭시, 프로젝트정보 db입력 & run탭으로 이동
     def btn_ok_overview(self):
-        # DB-3) 입력된 프로젝트정보 db에 저장
         global projectid
         projectid = str(self.projectid.text())
         distributor = str(self.distributor.text())
@@ -352,7 +314,7 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         # tabname="simul"+str(count)
         self.tabname = QTabWidget()
         self.simultab.addTab(self.tabname, "시뮬레이션 " + str(count))
-        # 기능-1)시뮬레이션 탭(우선 5번 추가 단순 반복으로 구현, 문자열+숫자를 객체이름으로 사용하는 법 다시 시도)
+        # 기능-1)시뮬레이션 탭(우선 5번 추가 단순 반복으로 구현, 문자열+숫자를 객체 이름으로 사용하는 법 다시 시도)
         if count == 1:  # 시뮬탭1
             grid = QGridLayout()
             belt = QLabel('벨트 로봇 개수 ')
@@ -484,13 +446,11 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         global count, projectid, simul_name, s_count, file_name
         count = count - 1
         s_count = s_count - 1
-        # 기능-2) (시뮬레이션보기 버튼 클릭 없이 삭제하기 위해->시뮬레이션 만들때 임의값 넣어줘야하?나중에)
         # DB에서 해당 simulname(simul3같은)테이터 삭제
         cur_index = self.simultab.currentIndex()
         simulname = "simul" + str(cur_index + 1)
         simul_name = file_name + '_s' + str(cur_index + 1)
         print(simulname)
-        # DB-4) simul id가 simulname인 데이터 DB에서 삭제 >> 시뮬레이션 1 클릭한 상태에서 시뮬레이션 3을 삭제할경우 simulname 값이 1로 나옴
         # 시뮬레이션 3을 삭제할 때 시뮬레이션 3을 클릭하고 있어야만 simulname 값이 3이 나옴.
         sql = "CALL deleteSimulation(%s);"
         cur.execute(sql, [simul_name])
@@ -519,11 +479,43 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
 
         # 탭 없애기
         self.simultab.removeTab(index)
-
+    #data 받아오는 slot
+    def data(self, simulname,belt,dump,time):
+        workbelt.insert(simulname-1,belt)
+        workdump.insert(simulname-1,dump)
+        totaltime.insert(simulname-1,time)
     # run-3.확인 버튼 클릭시, result 탭이동
     def btn_ok_run(self):
-        print(count)
-        #결과표 만들기
+        ##로봇타입당 작업량 그래프##
+        name = []
+        global workbelt
+        global workdump
+        global totaltime
+        totaltime=[]
+        workbelt = []
+        workdump = []
+        for i in range(count):
+            name.append("시뮬레이션 " + str(i + 1))
+            workbelt.insert(i,10) #시그널 만들기전 테스트할때 사용
+            workdump.insert(i,11) #시그널 만들기전 테스트할때 사용
+            totaltime.insert(i,1) #시그널 만들기전 테스트할때 사용
+        #print(workdump)
+        #print(workbelt)
+        #x축 문자열
+        x_dict=dict(enumerate(name))
+        ticks=[list(zip(x_dict.keys(),x_dict.values()))]
+        self.graph1.setBackground("White")
+        self.graph1.setLabel("left", "로봇 타입당 작업량")
+        self.graph1.addLegend()
+        pen = pyqtgraph.mkPen(color="Red")
+        self.graph1.plot(list(range(len(name))), workbelt, name="Belt Type", pen=pen, symbol='o', symbolSize=5, symbolBrush=("Red"))
+        pen = pyqtgraph.mkPen(color="Blue")
+        self.graph1.plot(list(range(len(name))), workdump, name="Dump Type", pen=pen, symbol='o', symbolSize=5, symbolBrush=("Blue"))
+        xax=self.graph1.getAxis('bottom')
+        xax.setTicks(ticks)
+        self.graph1.showGrid(x=True,y=True)
+        ##로봇타입당 작업량 그래프 end##
+        ##결과표 만들기
         self.table = QTableWidget()
         self.table.setRowCount(7)
         self.table.setColumnCount(count)
@@ -535,94 +527,102 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         # table.setHorizontalHeaderLabels(["simulation"])
         self.table.setVerticalHeaderLabels(
             ["총 소요시간(s)", "시간당 작업량", "벨트로봇당 평균 작업량", "덤프로봇당 평균 작업량", "벨트로봇 개수", "덤프로봇 개수", "물류량"])
-        self.table.setItem(0, 0, QTableWidgetItem(str(int(int(self.work1.text()) / 60))))
+
         """for i in range(count):
             w="work"+str(i+1)
             b="belt"+str(i+1)
             d="dump"+str(i+1)
-            table.setItem(0,i,QTableWidgetItem(60))#총소요시간:임의로 60초, 나중에 가져오기
-            table.setItem(1, i, QTableWidgetItem((self.w)/60))  # 시간당 작업량=물류량/작업시간
-            table.setItem(2, i, QTableWidgetItem((self.w)*(self.b)/(self.d)))  # 벨트로봇 당 작업량=총작업량*로봇타입비율 ?
-            table.setItem(3, i, QTableWidgetItem(60))  # 덤프로봇 당 작업량
+            table.setItem(0,i,QTableWidgetItem(str(totaltime[i]))#총소요시간:임의로 60초, 나중에 가져오기
+            table.setItem(1, i, QTableWidgetItem((self.w)/totaltime[i]))  # 시간당 작업량=물류량/작업시간
+            table.setItem(2, i, QTableWidgetItem(str(workbelt[i])))  # 벨트로봇 당 작업량=총작업량*로봇타입비율 ?
+            table.setItem(3, i, QTableWidgetItem(str(workdump[i]))  # 덤프로봇 당 작업량
             table.setItem(4, i, QTableWidgetItem(self.b))  # 벨트로봇 개수
             table.setItem(5, i, QTableWidgetItem(self.d))  # 덤프로봇 개수
             table.setItem(6, i, QTableWidgetItem(self.w))  # 물류량"""
         for i in range(count):
-            if i==0:
-                self.table.setItem(0, i, QTableWidgetItem('60'))  # 총소요시간:임의로 60초, 나중에 값받기
-                self.table.setItem(1, i, QTableWidgetItem(str((int(int(self.work1.text()) / 60)))))  # 시간당 작업량=물류량/작업시간, 시간 값받기
-                self.table.setItem(2, i, QTableWidgetItem('10'))  # 벨트로봇 당 작업량 값받기[=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))]
-                self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량 값받기
+            if i == 0:
+                self.table.setItem(0, i, QTableWidgetItem(str(totaltime[0])))  # 총소요시간
+                self.table.setItem(1, i, QTableWidgetItem(
+                    str((int(int(self.work1.text()) / totaltime[0])))))  # 시간당 작업량
+                self.table.setItem(2, i, QTableWidgetItem(str(workbelt[0])))  # 벨트로봇 당 작업량
+                self.table.setItem(3, i, QTableWidgetItem(str(workdump[0])))  # 덤프로봇 당 작업량
+                # self.table.setItem(2, i, QTableWidgetItem('10'))  # 벨트로봇 당 작업량
+                # self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량
                 self.table.setItem(4, i, QTableWidgetItem(self.belt1.text()))  # 벨트로봇 개수
                 self.table.setItem(5, i, QTableWidgetItem(self.dump1.text()))  # 덤프로봇 개수
                 self.table.setItem(6, i, QTableWidgetItem(self.work1.text()))  # 물류량
-            elif i==1:
-                self.table.setItem(0, i, QTableWidgetItem('60'))  # 총소요시간:임의로 60초, 나중에 값받기
+            elif i == 1:
+                self.table.setItem(0, i, QTableWidgetItem(str(totaltime[1])))  # 총소요시간
                 self.table.setItem(1, i, QTableWidgetItem(
-                    str((int(int(self.work2.text()) / 60)))))  # 시간당 작업량=물류량/작업시간, 시간 값받기
-                self.table.setItem(2, i, QTableWidgetItem(
-                    '10'))  # 벨트로봇 당 작업량 값받기[=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))]
-                self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량 값받기
+                    str((int(int(self.work2.text()) / totaltime[1])))))  # 시간당 작업량=물류량/작업시간
+                self.table.setItem(2, i, QTableWidgetItem(str(workbelt[1])))  # 벨트로봇 당 작업량
+                self.table.setItem(3, i, QTableWidgetItem(str(workdump[1])))  # 덤프로봇 당 작업량
                 self.table.setItem(4, i, QTableWidgetItem(self.belt2.text()))  # 벨트로봇 개수
                 self.table.setItem(5, i, QTableWidgetItem(self.dump2.text()))  # 덤프로봇 개수
                 self.table.setItem(6, i, QTableWidgetItem(self.work2.text()))  # 물류량
-            elif i==2:
-                self.table.setItem(0, i, QTableWidgetItem('60'))  # 총소요시간:임의로 60초, 나중에 값받기
+            elif i == 2:
+                self.table.setItem(0, i, QTableWidgetItem(str(totaltime[2])))  # 총소요시간:임의로 60초
                 self.table.setItem(1, i, QTableWidgetItem(
-                    str((int(int(self.work3.text()) / 60)))))  # 시간당 작업량=물류량/작업시간, 시간 값받기
+                    str((int(int(self.work3.text()) / totaltime[2])))))  # 시간당 작업량=물류량/작업시간
                 self.table.setItem(2, i, QTableWidgetItem(
-                    '10'))  # 벨트로봇 당 작업량 값받기[=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))]
-                self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량 값받기
+                    str(workbelt[2])))  # 벨트로봇 당 작업량
+                self.table.setItem(3, i, QTableWidgetItem(str(workdump[2])))  # 덤프로봇 당 작업량
                 self.table.setItem(4, i, QTableWidgetItem(self.belt3.text()))  # 벨트로봇 개수
                 self.table.setItem(5, i, QTableWidgetItem(self.dump3.text()))  # 덤프로봇 개수
                 self.table.setItem(6, i, QTableWidgetItem(self.work3.text()))  # 물류량
-            elif i==3:
-                self.table.setItem(0, i, QTableWidgetItem('60'))  # 총소요시간:임의로 60초, 나중에 값받기
+            elif i == 3:
+                self.table.setItem(0, i, QTableWidgetItem(str(totaltime[3])))  # 총소요시간
                 self.table.setItem(1, i, QTableWidgetItem(
-                    str((int(int(self.work4.text()) / 60)))))  # 시간당 작업량=물류량/작업시간, 시간 값받기
+                    str((int(int(self.work4.text()) / totaltime[3])))))  # 시간당 작업량=물류량/작업시간
                 self.table.setItem(2, i, QTableWidgetItem(
-                    '10'))  # 벨트로봇 당 작업량 값받기[=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))]
-                self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량 값받기
+                    str(workbelt[3])))  # 벨트로봇 당 작업량 값받기
+                self.table.setItem(3, i, QTableWidgetItem(str(workdump[3])))  # 덤프로봇 당 작업량
                 self.table.setItem(4, i, QTableWidgetItem(self.belt4.text()))  # 벨트로봇 개수
                 self.table.setItem(5, i, QTableWidgetItem(self.dump4.text()))  # 덤프로봇 개수
                 self.table.setItem(6, i, QTableWidgetItem(self.work4.text()))  # 물류량
-            elif i==4: #현재 시뮬 5개 까지, 늘릴때 여기도 늘리기
-                self.table.setItem(0, i, QTableWidgetItem('60'))  # 총소요시간:임의로 60초, 나중에 값받기
+            elif i == 4:  # 현재 시뮬 5개 까지, 늘릴때 여기도 늘리기
+                self.table.setItem(0, i, QTableWidgetItem(str(totaltime[4])))  # 총소요시간
                 self.table.setItem(1, i, QTableWidgetItem(
-                    str((int(int(self.work5.text()) / 60)))))  # 시간당 작업량=물류량/작업시간, 시간 값받기
+                    str((int(int(self.work5.text()) / totaltime[4])))))  # 시간당 작업량=물류량/작업시간
                 self.table.setItem(2, i, QTableWidgetItem(
-                    '10'))  # 벨트로봇 당 작업량 값받기[=총작업량*로봇타입비율 ?int((self.work1) * (self.belt1) / (self.dump1))]
-                self.table.setItem(3, i, QTableWidgetItem('10'))  # 덤프로봇 당 작업량 값받기
+                    str(workbelt[4])))  # 벨트로봇 당 작업량
+                self.table.setItem(3, i, QTableWidgetItem(str(workdump[4])))  # 덤프로봇 당 작업량
                 self.table.setItem(4, i, QTableWidgetItem(self.belt5.text()))  # 벨트로봇 개수
                 self.table.setItem(5, i, QTableWidgetItem(self.dump5.text()))  # 덤프로봇 개수
                 self.table.setItem(6, i, QTableWidgetItem(self.work5.text()))  # 물류량
-
 
         self.table.setGeometry(300, 300, 600, 600)
         layout = QVBoxLayout()
         layout.addWidget(self.table)
         self.tab_4.setLayout(layout)
-        #로봇타입별 그래프
-        name = []
-        workbelt = []
-        workdump = []
+        ##시간당 작업량 그래프##
+        self.bargraph.setBackground("White")
+        self.bargraph.setLabel("left", "시간당 작업량")
+        y=[]
+        """"(모든 시뮬 작업량이 같은 경우)
         for i in range(count):
-            name.append("시뮬레이션 " + str(i + 1))
-            workbelt.append(10 * (i + 1))  # 임의, 값받아오기
-            workdump.append(15 * (i + 1))  # 임의, 값받아오기
-        # self.graph1.setBackground('w')
-        # self.graph1.setLabel("left","로봇 타입당 작업량")
-        # self.graph1.showGrid(workbelt,workdump)
-        # self.graph.setYRange(0, 1000, padding=0)
-        self.graph1.plot(name, workbelt, "벨트타입 로봇", "r")
-        self.graph1.plot(name, workdump, "덤프타입 로봇", "b")
-        # self.graph.plot(workbelt,workdump)
+            y.append((int(int(self.work1.text()) / totaltime[i])))"""
+        for i in range(count):
+            if i==0:
+                y.append((int(int(self.work1.text()) / totaltime[0])))
+            elif i==1:
+                y.append((int(int(self.work2.text()) / totaltime[1])))
+            elif i==2:
+                y.append((int(int(self.work3.text()) / totaltime[2])))
+            elif i==3:
+                y.append((int(int(self.work4.text()) / totaltime[3])))
+            elif i==4:
+                y.append((int(int(self.work5.text()) / totaltime[4])))
+
+        bar=pyqtgraph.BarGraphItem(x=list(range(len(name))),height=y,width=0.3,brush='dark blue')
+        self.bargraph.addItem(bar)
+        xax = self.bargraph.getAxis('bottom')
+        xax.setTicks(ticks)
+        self.bargraph.showGrid(x=False, y=True)
+        ##시간당 작업량 그래프 end##
         # 탭 이동
         cur_index = self.tabWidget.currentIndex()
         self.tabWidget.setCurrentIndex(cur_index + 1)
-        ##조건문 없앨지..
-        ##if cur_index < len(self.tabWidget) - 1:
-        ##    self.tabWidget.setCurrentIndex(cur_index + 1)
 
     # run-4. 시뮬레이션 보기 클릭시, 입력 정보 DB에 저장 & 시뮬레이션 화면 띄우기
     def btn_view1(self):
@@ -737,7 +737,6 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         #self.third.exec_()
         #self.show()
         '''
-
 
 # 3.view.ui 시뮬레이션 보기 버튼 클릭시, 시뮬레이션 보여주는 화면
 # 시뮬레이션-2) 시뮬레이션 화면 클래스 추가
