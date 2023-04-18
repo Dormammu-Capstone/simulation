@@ -2,7 +2,8 @@
 
 
 </br>
-
+line 483:데이터 받아오는 함수 def data(simulname, belt,dump,time) 
+line 499,500,501: 시그널 만들기 전이라 테스트 위한 줄, 주석 처리하고 사용하시면 됩니다
 > Run simulation using map files created by previous map design program
 >
 > Use Dijkstra algorithm for simulation
