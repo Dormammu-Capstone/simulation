@@ -122,26 +122,31 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         self.map.resizeRowsToContents()
         for i in range(1, row + 1):
             for j in range(1, col + 1):
-                if load_sheet.cell(i, j).value == "y":
+                if load_sheet.cell(i, j).value == "↑":
+                    self.map.item(i - 1, j - 1).setText("↑")
+                elif load_sheet.cell(i, j).value == "↓":
+                    self.map.item(i - 1, j - 1).setText("↓")
+                elif load_sheet.cell(i, j).value == "←":
+                    self.map.item(i - 1, j - 1).setText("←")
+                elif load_sheet.cell(i, j).value == "→":
+                    self.map.item(i - 1, j - 1).setText("→")
+                if load_sheet.cell(i, j).fill.start_color.index == 'FFFFFF00':
                     self.map.item(i - 1, j - 1).setBackground(Qt.yellow)
-                    self.map.item(i - 1, j - 1).setText("y")
-                    self.map.item(i - 1, j - 1).setForeground(Qt.yellow)
-                if load_sheet.cell(i, j).value == "b":
+                    self.map.item(i - 1, j - 1).setForeground(Qt.black)
+                elif load_sheet.cell(i, j).fill.start_color.index == 'FF0000FF':
                     self.map.item(i - 1, j - 1).setBackground(Qt.darkBlue)
-                    self.map.item(i - 1, j - 1).setText("b")
-                    self.map.item(i - 1, j - 1).setForeground(Qt.darkBlue)
-                if load_sheet.cell(i, j).value == "g":
+                    self.map.item(i - 1, j - 1).setForeground(Qt.white)
+                elif load_sheet.cell(i, j).fill.start_color.index == 'FF008000':
                     self.map.item(i - 1, j - 1).setBackground(Qt.darkGreen)
-                    self.map.item(i - 1, j - 1).setText("g")
-                    self.map.item(i - 1, j - 1).setForeground(Qt.darkGreen)
-                if load_sheet.cell(i, j).value == "r":
+                    self.map.item(i - 1, j - 1).setForeground(Qt.white)
+                elif load_sheet.cell(i, j).fill.start_color.index == 'FFFF0000':
                     self.map.item(i - 1, j - 1).setBackground(Qt.red)
-                    self.map.item(i - 1, j - 1).setText("r")
-                    self.map.item(i - 1, j - 1).setForeground(Qt.red)
-                if load_sheet.cell(i, j).value == "d":
+                    self.map.item(i - 1, j - 1).setForeground(Qt.white)
+                elif load_sheet.cell(i, j).fill.start_color.index == 'FF808080':
                     self.map.item(i - 1, j - 1).setBackground(Qt.darkGray)
-                    self.map.item(i - 1, j - 1).setText("d")
-                    self.map.item(i - 1, j - 1).setForeground(Qt.darkGray)
+                    self.map.item(i - 1, j - 1).setForeground(Qt.white)
+                else:
+                    self.map.item(i - 1, j - 1).setForeground(Qt.black)
 
         self.ok.clicked.connect(self.btn_ok_overview)  # overview-3.확인 버튼 클릭시, 프로젝트 정보 db저장
         self.ok_run.clicked.connect(self.btn_ok_run)  # run. 확인 버튼클릭시, result탭 이동
@@ -480,7 +485,7 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         # 탭 없애기
         self.simultab.removeTab(index)
     #data 받아오는 slot
-    def data(self, simulname,belt,dump,time):
+    def data(self, simulname,belt,dump,time): #simulname:1,2,3...
         workbelt.insert(simulname-1,belt)
         workdump.insert(simulname-1,dump)
         totaltime.insert(simulname-1,time)
