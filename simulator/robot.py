@@ -11,7 +11,6 @@ from PySide6.QtCore import (
     Signal,
     Slot,
 )
-from PIL import Image
 from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtWidgets import (
     QGraphicsObject,

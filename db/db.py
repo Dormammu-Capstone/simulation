@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 
 conn = pymysql.connect(
-    host="127.0.0.1", user="root", port = 3307, password="dormammu", db="lghpdb", charset="utf8"
+    host="127.0.0.1", user="root", port = 3306, password="1290", db="lghpdb", charset="utf8"
 )
 
 dblist = ["buffer", "chargingstation", "chute", "workstation"]

@@ -22,9 +22,9 @@ from simulator.pathfinding import registerMap
 
 conn = pymysql.connect(
     host="127.0.0.1",
-    port=3307,
+    port=3306,
     user="root",
-    password="dormammu",
+    password="1290",
     db="lghpdb",
     charset="utf8",
     client_flag=CLIENT.MULTI_STATEMENTS,
@@ -100,6 +100,8 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         self.setWindowIcon(QIcon("./image/logo.png"))
         self.setGeometry(100, 50, 1000, 550)
         self.show()
+
+        self.save.clicked.connect(self.btn_save)
 
         ###   overview  tab ###
         # overview-1.map 파일 미리보기
@@ -286,6 +288,12 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         elif file_grid[14] == 5:
             self.color_block.setText("Grey")
             self.c_block.setStyleSheet("background:darkgrey")
+
+    def btn_save(self):
+        self.projectid.text()
+        self.distributor.text()
+        self.customer.text()
+        self.centername.text()
 
 
 if __name__ == "__main__":
