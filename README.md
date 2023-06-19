@@ -17,7 +17,17 @@
   - 단위 시간 당 물류 처리량 그래프
 
 ## 시뮬레이션 알고리즘
+<img width="300" height="400" alt="simul1" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/80f5cccc-6e75-4641-a8d8-fe659310d84a">
+<img width="400" height="300" alt="simul2" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/7dfd5550-087a-4647-9211-e5fd7dc41082">
 
 ## 미리 보기
+<img width="472" height="300" alt="6" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/28e18506-84a7-4a83-a1ef-af172a569891">
+<img width="472" height="300" alt="7" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/cbb405e1-4fcf-455a-8b45-84659e4c6c2e">
+<img width="472" height="300" alt="8" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/913d7f21-033b-49b7-a4ec-6984938642ae">
+<img width="472" height="300" alt="9" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/d58ced31-96b3-41af-a3d7-a9d4b1d85dad">
+<img width="472" height="300" alt="10" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/70e20975-427b-464e-8ef4-aea0e8ce5e9c">
+<img width="472" height="300" alt="11" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/5bb05e2d-3410-43ec-9617-e0b1ffae9b4f">
+<img width="472" height="300" alt="12" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/7988a644-ce6e-4b97-8f79-6a8cb36e3d8a">
 
 ## 사용 흐름
+<img width="700" height="100" alt="0" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/fc76ed1c-b9a1-4ba0-86a4-c7bfa9043bf0">
