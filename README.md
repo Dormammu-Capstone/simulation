@@ -18,7 +18,7 @@
 
 ## 시뮬레이션 알고리즘
 <img width="300" height="400" alt="simul1" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/80f5cccc-6e75-4641-a8d8-fe659310d84a">
-<img width="400" height="300" alt="simul2" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/7dfd5550-087a-4647-9211-e5fd7dc41082">
+<img width="400" height="200" alt="simul2" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/7dfd5550-087a-4647-9211-e5fd7dc41082">
 
 ## 미리 보기
 <img width="472" height="300" alt="6" src="https://github.com/Dormammu-Capstone/simulation/assets/74133818/28e18506-84a7-4a83-a1ef-af172a569891">
